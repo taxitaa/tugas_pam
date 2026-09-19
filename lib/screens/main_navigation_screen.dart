@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import '../services/session_manager.dart';
 import 'dashboard_screen.dart';
-import 'login_screen.dart';
 import 'stopwatch_help_screen.dart';
+import 'login_screen.dart';
+import '../services/session_manager.dart';
 
 class MainNavigationScreen extends StatefulWidget {
   const MainNavigationScreen({super.key});
@@ -19,52 +19,83 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
     const StopwatchHelpScreen(),
   ];
 
-  void _onTabTapped(int index) {
-    if (index == 2) {
-      _logout();
-    } else {
-      setState(() {
-        _currentIndex = index;
-      });
-    }
-  }
-
   void _logout() async {
-    showDialog(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: const Text('Konfirmasi Logout'),
-        content: const Text('Apakah Anda yakin ingin keluar?'),
-        actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Batal')),
-          TextButton(
-            onPressed: () async {
-              Navigator.pop(ctx);
-              await SessionManager.clearSession();
-              if (mounted) {
-                Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => const LoginScreen()));
-              }
-            },
-            child: const Text('Logout', style: TextStyle(color: Colors.red)),
-          ),
-        ],
-      ),
-    );
+    await SessionManager.clearSession();
+    if (mounted) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (_) => const LoginScreen()),
+      );
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: _pages[_currentIndex],
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _currentIndex,
-        onTap: _onTabTapped,
-        selectedItemColor: const Color(0xFFE91E63),
-        unselectedItemColor: Colors.grey,
-        items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home_rounded), label: 'Halaman Utama'),
-          BottomNavigationBarItem(icon: Icon(Icons.timer_outlined), label: 'Stopwatch & Bantuan'),
-          BottomNavigationBarItem(icon: Icon(Icons.logout_rounded), label: 'Logout'),
+      body: IndexedStack(
+        index: _currentIndex,
+        children: _pages,
+      ),
+      bottomNavigationBar: Container(
+        decoration: const BoxDecoration(
+          border: Border(top: BorderSide(color: Color(0xFFF1F5F9))),
+        ),
+        child: BottomNavigationBar(
+          currentIndex: _currentIndex,
+          selectedItemColor: const Color(0xFF5C88BF), // Soft Blue Active
+          unselectedItemColor: Colors.grey.shade400,
+          backgroundColor: Colors.white,
+          elevation: 0,
+          onTap: (index) {
+            if (index == 2) {
+              _showLogoutDialog();
+            } else {
+              setState(() => _currentIndex = index);
+            }
+          },
+          items: const [
+            BottomNavigationBarItem(
+              icon: Icon(Icons.home_outlined),
+              activeIcon: Icon(Icons.home_rounded),
+              label: 'Halaman Utama',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.timer_outlined),
+              activeIcon: Icon(Icons.timer_rounded),
+              label: 'Stopwatch & Bantuan',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.logout_rounded),
+              label: 'Logout',
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _showLogoutDialog() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Konfirmasi Logout'),
+        content: const Text('Apakah Anda yakin ingin keluar dari aplikasi?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Batal'),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.pop(context);
+              _logout();
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Color(0xFFF472B6), // Pink Accent
+              foregroundColor: Colors.white,
+            ),
+            child: const Text('Logout'),
+          ),
         ],
       ),
     );

@@ -10,84 +10,151 @@ class DashboardScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color(0xFFF8FAFC),
       appBar: AppBar(
-        title: const Text('EventSmart Wedding Planner', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white)),
-        backgroundColor: const Color(0xFFE91E63),
+        elevation: 0,
+        backgroundColor: const Color(0xFF5C88BF),
+        title: Column(
+          children: const [
+            Text(
+              'NAWASENA',
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 18,
+                letterSpacing: 2,
+                color: Color(0xFFFEE2E2),
+              ),
+            ),
+            Text(
+              'A Beautiful   Start to Forever',
+              style: TextStyle(fontSize: 11, color: Colors.white70),
+            ),
+          ],
+        ),
         centerTitle: true,
       ),
-      body: Center(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              const Text(
-                'Menu Utama',
-                textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Color(0xFFE91E63)),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(24.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              'Menu Utama',
+              style: TextStyle(
+                fontSize: 22,
+                fontWeight: FontWeight.bold,
+                color: Color(0xFF1E293B),
               ),
-              const SizedBox(height: 20),
-
-              // 5 Menu Vertikal
-              _buildMenuButton(
-                context,
-                icon: Icons.people_alt_rounded,
-                title: 'Daftar Anggota Kelompok',
-                color: Colors.pink.shade400,
-                target: const MembersScreen(),
-              ),
-              const SizedBox(height: 12),
-              _buildMenuButton(
-                context,
-                icon: Icons.calculate_rounded,
-                title: 'Komputasi Estimasi Biaya',
-                color: Colors.pink.shade500,
-                target: const ComputationScreen(),
-              ),
-              const SizedBox(height: 12),
-              _buildMenuButton(
-                context,
-                icon: Icons.inventory_2_rounded,
-                title: 'CRUD Layanan / Vendor',
-                color: Colors.pink.shade600,
-                target: const VendorCrudScreen(),
-              ),
-              const SizedBox(height: 12),
-              _buildMenuButton(
-                context,
-                icon: Icons.calendar_month_rounded,
-                title: 'Konversi Tanggal & Weton',
-                color: Colors.pink.shade700,
-                target: const DateConverterScreen(),
-              ),
-              const SizedBox(height: 12),
-              _buildMenuButton(
-                context,
-                icon: Icons.auto_awesome_rounded,
-                title: 'Saka Bali & Adat Pernikahan',
-                color: Colors.pink.shade800,
-                target: const DateConverterScreen(initialTab: 1),
-              ),
-            ],
-          ),
+            ),
+            const SizedBox(height: 6),
+            Text(
+              'Kelola persiapan pernikahan dengan praktis & rapi.',
+              style: TextStyle(fontSize: 13, color: Colors.grey.shade600),
+            ),
+            const SizedBox(height: 24),
+            _buildMenuCard(
+              context,
+              icon: Icons.groups_rounded,
+              title: 'Daftar Anggota Kelompok',
+              subtitle: 'Informasi tim pengembang aplikasi',
+              bgColor: const Color(0xFFE0F2FE),
+              iconColor: const Color(0xFF0284C7),
+              target: const MembersScreen(),
+            ),
+            _buildMenuCard(
+              context,
+              icon: Icons.calculate_outlined,
+              title: 'Komputasi Estimasi Biaya',
+              subtitle: 'Hitung katering & anggaran pesta',
+              bgColor: const Color(0xFFFCE7F3),
+              iconColor:const Color(0xFFF3C5C5),
+              target: const ComputationScreen(),
+            ),
+            _buildMenuCard(
+              context,
+              icon: Icons.storefront_rounded,
+              title: 'CRUD Layanan / Vendor',
+              subtitle: 'Kelola data vendor & penyedia jasa',
+              bgColor: const Color(0xFFE0F2FE),
+              iconColor: const Color(0xFF0284C7),
+              target: const VendorCrudScreen(),
+            ),
+            _buildMenuCard(
+              context,
+              icon: Icons.calendar_today_rounded,
+              title: 'Perhitungan Pernikahan Weton',
+              subtitle: 'Analisis kecocokan pernikahan berdasarkan kalender weton',
+              bgColor: const Color(0xFFFCE7F3),
+              iconColor: const Color(0xFFF3C5C5),
+              target: const DateConverterScreen(mode: DateCalculatorMode.wetonMarriage),
+            ),
+            _buildMenuCard(
+              context,
+              icon: Icons.auto_awesome_outlined,
+              title: 'Saka Bali & Adat Pernikahan',
+              subtitle: 'Kalender Saka Bali dan rekomendasi adat pernikahan Bali',
+              bgColor: const Color(0xFFE0F2FE),
+              iconColor: const Color(0xFF0284C7),
+              target: const DateConverterScreen(mode: DateCalculatorMode.sakaBaliMarriage),
+            ),
+          ],
         ),
       ),
     );
   }
 
-  Widget _buildMenuButton(BuildContext context, {required IconData icon, required String title, required Color color, required Widget target}) {
-    return ElevatedButton.icon(
-      style: ElevatedButton.styleFrom(
-        backgroundColor: color,
-        foregroundColor: Colors.white,
-        padding: const EdgeInsets.symmetric(vertical: 16),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        elevation: 3,
+  Widget _buildMenuCard(
+    BuildContext context, {
+    required IconData icon,
+    required String title,
+    required String subtitle,
+    required Color bgColor,
+    required Color iconColor,
+    required Widget target,
+  }) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 14),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.02),
+            blurRadius: 8,
+            offset: const Offset(0, 3),
+          ),
+        ],
+        border: Border.all(color: const Color(0xFFF1F5F9)),
       ),
-      icon: Icon(icon, size: 28),
-      label: Text(title, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
-      onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => target)),
+      child: Material(
+        color: Colors.transparent,
+        borderRadius: BorderRadius.circular(16),
+        child: ListTile(
+          contentPadding: const EdgeInsets.symmetric(horizontal: 18, vertical: 8),
+          leading: Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: bgColor,
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Icon(icon, color: iconColor, size: 24),
+          ),
+          title: Text(
+            title,
+            style: const TextStyle(
+              fontWeight: FontWeight.w600,
+              fontSize: 15,
+              color: Color(0xFF1E293B),
+            ),
+          ),
+          subtitle: Text(
+            subtitle,
+            style: TextStyle(fontSize: 12, color: Colors.grey.shade500),
+          ),
+          trailing: const Icon(Icons.arrow_forward_ios_rounded, size: 16, color: Colors.grey),
+          onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => target)),
+        ),
+      ),
     );
   }
 }

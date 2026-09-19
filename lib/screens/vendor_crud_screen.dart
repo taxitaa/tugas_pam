@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import '../models/vendor_model.dart';
-import '../services/db_helper.dart';
 
 class VendorCrudScreen extends StatefulWidget {
   const VendorCrudScreen({super.key});
@@ -10,110 +8,105 @@ class VendorCrudScreen extends StatefulWidget {
 }
 
 class _VendorCrudScreenState extends State<VendorCrudScreen> {
-  List<Vendor> _vendors = [];
+  final List<Map<String, String>> _vendors = [];
 
-  @override
-  void initState() {
-    super.initState();
-    _refreshVendors();
-  }
-
-  void _refreshVendors() async {
-    final data = await DBHelper.getVendors();
-    setState(() {
-      _vendors = data;
-    });
-  }
-
-  void _showFormDialog({Vendor? vendor}) {
-    final nameCtrl = TextEditingController(text: vendor?.name ?? '');
-    final categoryCtrl = TextEditingController(text: vendor?.category ?? '');
-    final priceCtrl = TextEditingController(text: vendor != null ? vendor.price.toString() : '');
-    final contactCtrl = TextEditingController(text: vendor?.contact ?? '');
+  void _showAddVendorDialog() {
+    final nameController = TextEditingController();
+    final categoryController = TextEditingController();
 
     showDialog(
       context: context,
-      builder: (ctx) => AlertDialog(
-        title: Text(vendor == null ? 'Tambah Vendor' : 'Edit Vendor'),
-        content: SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextField(controller: nameCtrl, decoration: const InputDecoration(labelText: 'Nama Vendor')),
-              TextField(controller: categoryCtrl, decoration: const InputDecoration(labelText: 'Kategori (Dekor/Katering/dll)')),
-              TextField(controller: priceCtrl, keyboardType: TextInputType.number, decoration: const InputDecoration(labelText: 'Harga (Rp)')),
-              TextField(controller: contactCtrl, decoration: const InputDecoration(labelText: 'Kontak HP')),
-            ],
-          ),
+      builder: (context) => AlertDialog(
+        title: const Text('Tambah Vendor Baru'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextField(
+              controller: nameController,
+              decoration: const InputDecoration(labelText: 'Nama Vendor'),
+            ),
+            TextField(
+              controller: categoryController,
+              decoration: const InputDecoration(labelText: 'Kategori / Layanan'),
+            ),
+          ],
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Batal')),
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Batal'),
+          ),
           ElevatedButton(
-            onPressed: () async {
-              if (nameCtrl.text.isEmpty) return;
-              Vendor v = Vendor(
-                id: vendor?.id,
-                name: nameCtrl.text,
-                category: categoryCtrl.text,
-                price: double.tryParse(priceCtrl.text) ?? 0,
-                contact: contactCtrl.text,
-              );
-              if (vendor == null) {
-                await DBHelper.insertVendor(v);
-              } else {
-                await DBHelper.updateVendor(v);
-              }
-              if (mounted) {
-                // ignore: use_build_context_synchronously
-                Navigator.pop(ctx);
-                _refreshVendors();
+            onPressed: () {
+              if (nameController.text.isNotEmpty) {
+                setState(() {
+                  _vendors.add({
+                    'name': nameController.text,
+                    'category': categoryController.text,
+                  });
+                });
+                Navigator.pop(context);
               }
             },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFF5C88BF),
+              foregroundColor: Colors.white,
+            ),
             child: const Text('Simpan'),
-          )
+          ),
         ],
       ),
     );
   }
 
-  void _deleteVendor(int id) async {
-    await DBHelper.deleteVendor(id);
-    _refreshVendors();
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Kelola Vendor Pernikahan')),
-      floatingActionButton: FloatingActionButton(
-        backgroundColor: const Color(0xFFE91E63),
-        onPressed: () => _showFormDialog(),
-        child: const Icon(Icons.add, color: Colors.white),
+      backgroundColor: const Color(0xFFF8FAFC),
+      appBar: AppBar(
+        title: const Text('Kelola Vendor Pernikahan'),
+        backgroundColor: const Color(0xFF5C88BF),
+        foregroundColor: Colors.white,
+        elevation: 0,
       ),
       body: _vendors.isEmpty
-          ? const Center(child: Text('Belum ada data vendor. Tekan + untuk menambah.'))
+          ? Center(
+              child: Text(
+                'Belum ada data vendor. Tekan + untuk menambah.',
+                style: TextStyle(color: Colors.grey.shade600, fontSize: 14),
+              ),
+            )
           : ListView.builder(
-              padding: const EdgeInsets.all(12),
+              padding: const EdgeInsets.all(20),
               itemCount: _vendors.length,
-              itemBuilder: (ctx, index) {
-                final v = _vendors[index];
-                return Card(
-                  margin: const EdgeInsets.only(bottom: 8),
+              itemBuilder: (context, index) {
+                final item = _vendors[index];
+                return Container(
+                  margin: const EdgeInsets.only(bottom: 12),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(14),
+                    border: Border.all(color: const Color(0xFFF1F5F9)),
+                  ),
                   child: ListTile(
-                    title: Text(v.name, style: const TextStyle(fontWeight: FontWeight.bold)),
-                    subtitle: Text('${v.category} • Rp ${v.price.toStringAsFixed(0)}\nHp: ${v.contact}'),
-                    isThreeLine: true,
-                    trailing: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        IconButton(icon: const Icon(Icons.edit, color: Colors.blue), onPressed: () => _showFormDialog(vendor: v)),
-                        IconButton(icon: const Icon(Icons.delete, color: Colors.red), onPressed: () => _deleteVendor(v.id!)),
-                      ],
+                    title: Text(item['name']!, style: const TextStyle(fontWeight: FontWeight.bold)),
+                    subtitle: Text(item['category']!),
+                    trailing: IconButton(
+                      icon: const Icon(Icons.delete_outline_rounded, color: Colors.redAccent),
+                      onPressed: () {
+                        setState(() => _vendors.removeAt(index));
+                      },
                     ),
                   ),
                 );
               },
             ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: _showAddVendorDialog,
+        backgroundColor: const Color(0xFFF472B6), // Pink Pastel Soft
+        foregroundColor: Colors.white,
+        child: const Icon(Icons.add_rounded, size: 28),
+      ),
     );
   }
 }

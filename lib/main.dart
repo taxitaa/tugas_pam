@@ -7,7 +7,7 @@ import 'services/session_manager.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  initializeDatabase(); // Dihapus await-nya karena void
+  initializeDatabase();
   final isLoggedIn = await SessionManager.isLoggedIn();
   runApp(MyApp(isLoggedIn: isLoggedIn));
 }
@@ -23,17 +23,19 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         useMaterial3: true,
+        scaffoldBackgroundColor: const Color(0xFFF8FAFC),
         colorScheme: ColorScheme.fromSeed(
-          seedColor: const Color(0xFFE91E63),
-          primary: const Color(0xFFE91E63),
-          secondary: const Color(0xFFF48FB1),
-          surface: const Color(0xFFFFF5F7),
+          seedColor: const Color(0xFF5C88BF), // Soft Blue
+          primary: const Color(0xFF5C88BF),   // Soft Blue Utama
+          secondary: const Color(0xFFF3C5C5), // Baby Pink
+          surface: Colors.white,
         ),
-        textTheme: GoogleFonts.poppinsTextTheme(Theme.of(context).textTheme),
-        cardTheme: CardThemeData( // Diubah ke CardThemeData
-          elevation: 2,
+        textTheme: GoogleFonts.plusJakartaSansTextTheme(Theme.of(context).textTheme),
+        cardTheme: CardThemeData(
+          elevation: 0,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),
+            side: const BorderSide(color: Color(0xFFF1F5F9)),
           ),
         ),
       ),

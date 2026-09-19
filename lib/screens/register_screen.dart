@@ -50,7 +50,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
               width: double.infinity,
               height: 48,
               child: ElevatedButton(
-                style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFFE91E63), foregroundColor: Colors.white),
+                style: ElevatedButton.styleFrom(backgroundColor:Color(0xFFF472B6), foregroundColor: Colors.white),
                 onPressed: _register,
                 child: const Text('DAFTAR'),
               ),
